@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from MiniCube import MiniCube
+from mpl_toolkits.mplot3d import Axes3D
 
 
 def copyCubies(a, b):
@@ -13,7 +14,7 @@ def copyCubies(a, b):
 def rotate_face_cubies(face, axis='X', counterClockWise=True):
 	cubies = np.reshape(face, (-1))
 	for cubie in cubies:
-		print(cubie.position)
+		# print(cubie.position)
 		cubie.rotate(axis, counterClockWise)
 
 
@@ -28,35 +29,36 @@ class Cube(object):
 				for k in range(3):
 					self.cubies[i, j, k] = MiniCube([i, j, k])
 	
-	def face_rotate(self, face="f"):
-		ccwise = (face.endswith("'") & ((face[0] == "f") | (face[0] == "r") | (face[0] == "u")))
-		ccwise = ccwise | ((len(face) == 1) & ((face == "b") | (face == "l") | (face == "d")))
-		print(ccwise, )
-		ccint = 2 * int(ccwise) - 1
+	def rotate_face(self, cmd="f"):
+		ccwise = (cmd.endswith("'") & ((cmd[0] == "f") | (cmd[0] == "r") | (cmd[0] == "u")))
+		ccwise = ccwise | ((len(cmd) == 1) & ((cmd == "b") | (cmd == "l") | (cmd == "d")))
+		# print(ccwise, cmd)
+		ccint = 2 * int(ccwise) - 1  # type: int
 		
+		self.print_cubies_positions()
 		x = None
-		if face[0] == "f":
+		if cmd[0] == "f":
 			face_array = self.cubies[:, :, 2]
 			self.cubies[:, :, 2] = self.rotate_2d_array(face_array, ccint)
 			rotate_face_cubies(self.cubies[:, :, 2], 'Z', ccwise)
 		
-		elif face[0] == "b":
+		elif cmd[0] == "b":
 			face_array = self.cubies[:, :, 0]
 			x = self.rotate_2d_array(face_array, ccint)
 			self.cubies[:, :, 0] = self.rotate_2d_array(face_array, ccint)
 			rotate_face_cubies(self.cubies[:, :, 0], 'Z', ccwise)
 		
-		elif face[0] == "r":
+		elif cmd[0] == "r":
 			face_array = self.cubies[2, :, :]
 			self.cubies[2, :, :] = self.rotate_2d_array(face_array, ccint)
 			rotate_face_cubies(self.cubies[2, :, :], 'X', ccwise)
 		
-		elif face[0] == "l":
+		elif cmd[0] == "l":
 			face_array = self.cubies[0, :, :]
 			self.cubies[0, :, :] = self.rotate_2d_array(face_array, ccint)
 			rotate_face_cubies(self.cubies[0, :, :], 'X', ccwise)
 		
-		elif face[0] == "u":
+		elif cmd[0] == "u":
 			face_array = self.cubies[:, 2, :]
 			self.cubies[:, 2, :] = self.rotate_2d_array(face_array, ccint)
 			rotate_face_cubies(self.cubies[:, 2, :], 'Y', ccwise)
@@ -66,29 +68,27 @@ class Cube(object):
 			self.cubies[:, 0, :] = self.rotate_2d_array(face_array, ccint)
 			rotate_face_cubies(self.cubies[:, 0, :], 'Y', ccwise)
 		
-		for i in range(3):
-			for j in range(3):
-				for k in range(3):
-					self.cubies[i, j, k].position = [i, j, k]
+		self.reset_positions()
+		self.reset_positions()
 		return x
 	
 	def render(self):
 		fig = plt.figure(figsize=(10, 10))
 		plt.title("Rubiks Cube")
 		ax = fig.add_subplot(111, projection='3d')
-		X = np.array([0,1,0,1]).reshape((2,2))-0.5
-		Y = np.array([0,0,1,1]).reshape((2,2))-0.5
+		X = np.array([0, 1, 0, 1]).reshape((2, 2))-0.5
+		Y = np.array([0, 0, 1, 1]).reshape((2, 2))-0.5
 		Z = np.array([0.]*4).reshape((2,2))
 		
 		cubies = np.reshape(self.cubies, (-1))
-		print(len(cubies))
+		# print(len(cubies))
 		for cubie in cubies:
-			ax.plot_surface(Z+cubie.position[0]+0.5, X+cubie.position[1], Y+cubie.position[2], color=cubie.global_colors[0]) # +X
-			ax.plot_surface(Z+cubie.position[0]-0.5, X+cubie.position[1], Y+cubie.position[2], color=cubie.global_colors[1]) # -X
-			ax.plot_surface(X+cubie.position[0], Z+cubie.position[1]+0.5, Y+cubie.position[2], color=cubie.global_colors[2]) # +Y
-			ax.plot_surface(X+cubie.position[0], Z+cubie.position[1]-0.5, Y+cubie.position[2], color=cubie.global_colors[3]) # -Y
-			ax.plot_surface(X+cubie.position[0], Y+cubie.position[1], Z+cubie.position[2]+0.5, color=cubie.global_colors[4]) # +Z
-			ax.plot_surface(X+cubie.position[0], Y+cubie.position[1], Z+cubie.position[2]-0.5, color=cubie.global_colors[5]) # -Z
+			ax.plot_surface(Z+cubie.position[0]+0.5, X+cubie.position[1], Y+cubie.position[2], color=cubie.global_colors[0])  #  +X
+			ax.plot_surface(Z+cubie.position[0]-0.5, X+cubie.position[1], Y+cubie.position[2], color=cubie.global_colors[1])  #  -X
+			ax.plot_surface(X+cubie.position[0], Z+cubie.position[1]+0.5, Y+cubie.position[2], color=cubie.global_colors[2])  #  +Y
+			ax.plot_surface(X+cubie.position[0], Z+cubie.position[1]-0.5, Y+cubie.position[2], color=cubie.global_colors[3])  #  -Y
+			ax.plot_surface(X+cubie.position[0], Y+cubie.position[1], Z+cubie.position[2]+0.5, color=cubie.global_colors[4])  #  +Z
+			ax.plot_surface(X+cubie.position[0], Y+cubie.position[1], Z+cubie.position[2]-0.5, color=cubie.global_colors[5])  #  -Z
 		
 		ax.set_xlabel('X')
 		ax.set_ylabel('Y')
@@ -108,3 +108,22 @@ class Cube(object):
 		copyCubies(newcubes[1:2, 1], face_array[1:2, 1])
 		# print(newcubes)
 		return newcubes
+	
+	def reset(self):
+		self.reset_positions()
+		for cubie in np.reshape(self.cubies, (-1)):
+			cubie.reset_colors()
+		return
+	
+	def print_cubies_positions(self):
+		cubies = np.reshape(self.cubies, (-1))
+		for i, cubie in enumerate(cubies):
+			print(i, cubie.position)
+		return
+	
+	def reset_positions(self):
+		for i in range(3):
+			for j in range(3):
+				for k in range(3):
+					self.cubies[i, j, k].position = [i, j, k]
+		return

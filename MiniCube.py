@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 class MiniCube(object):
 	
@@ -59,14 +60,6 @@ class MiniCube(object):
 				ncolors[2] = self.global_colors[1]
 				ncolors[3] = self.global_colors[0]
 		
-		# flag = 2*int(counterclockwise)-1
-		# coords = {'X':0, 'Y':1, 'Z':2}
-		# for ax in range(3):
-		# 	self.orientation[ax] += (flag*90+360)
-		# self.orientation[coords[axis]] -= flag*90
-		# for ax in range(3):
-		# self.orientation[ax] %= 360
-		
 		for i in range(6):
 			self.global_colors[i] = ncolors[i]
 		
@@ -78,33 +71,24 @@ class MiniCube(object):
 		"""
 		return self.global_colors
 	
-	def render(self, title="Title"):
+	def render(self, title="Cubie Render", display=False):
 		axes = [2, 1, 4, 0, 3, 5]
-		print(" %s \n%s%s%s\n %s \n %s \n" % (self.global_colors[axes[0]][0],
-		                                      self.global_colors[axes[1]][0],
-		                                      self.global_colors[axes[2]][0],
-		                                      self.global_colors[axes[3]][0],
-		                                      self.global_colors[axes[4]][0],
-		                                      self.global_colors[axes[5]][0]))
-		fig = plt.figure(figsize=(10, 10))
-		plt.title("Rubiks Cube")
-		ax = fig.add_subplot(111, projection='3d')
-		X = np.array([0, 1, 0, 1]).reshape((2, 2)) - 0.5
-		Y = np.array([0, 0, 1, 1]).reshape((2, 2)) - 0.5
-		Z = np.array([0.] * 4).reshape((2, 2))
-		
-		ax.plot_surface(Z + self.position[0] + 0.5, X + self.position[1], Y + self.position[2],
-		                color=self.global_colors[0], alpha=1)  # +X
-		ax.plot_surface(Z + self.position[0] - 0.5, X + self.position[1], Y + self.position[2],
-		                color=self.global_colors[1], alpha=1)  # -X
-		ax.plot_surface(X + self.position[0], Z + self.position[1] + 0.5, Y + self.position[2],
-		                color=self.global_colors[2], alpha=1)  # +Y
-		ax.plot_surface(X + self.position[0], Z + self.position[1] - 0.5, Y + self.position[2],
-		                color=self.global_colors[3], alpha=1)  # -Y
-		ax.plot_surface(X + self.position[0], Y + self.position[1], Z + self.position[2] + 0.5,
-		                color=self.global_colors[4], alpha=1)  # +Z
-		ax.plot_surface(X + self.position[0], Y + self.position[1], Z + self.position[2] - 0.5,
-		                color=self.global_colors[5], alpha=1)  # -Z
+		print(" %s \n%s%s%s\n %s \n %s \n" % (self.global_colors[axes[0]][0], self.global_colors[axes[1]][0], self.global_colors[axes[2]][0], self.global_colors[axes[3]][0], self.global_colors[axes[4]][0],  self.global_colors[axes[5]][0]))
+		if display:
+			fig = plt.figure(figsize=(3, 3))
+			plt.title("Rubiks Cube")
+			ax = fig.add_subplot(111, projection='3d')
+			X = np.array([0, 1, 0, 1]).reshape((2, 2)) - 0.5
+			Y = np.array([0, 0, 1, 1]).reshape((2, 2)) - 0.5
+			Z = np.array([0.] * 4).reshape((2, 2))
+			
+			ax.plot_surface(Z + self.position[0] + 0.5, X + self.position[1], Y + self.position[2], color=self.global_colors[0], alpha=1)  # +X
+			ax.plot_surface(Z + self.position[0] - 0.5, X + self.position[1], Y + self.position[2], color=self.global_colors[1], alpha=1)  # -X
+			ax.plot_surface(X + self.position[0], Z + self.position[1] + 0.5, Y + self.position[2], color=self.global_colors[2], alpha=1)  # +Y
+			ax.plot_surface(X + self.position[0], Z + self.position[1] - 0.5, Y + self.position[2], color=self.global_colors[3], alpha=1)  # -Y
+			ax.plot_surface(X + self.position[0], Y + self.position[1], Z + self.position[2] + 0.5, color=self.global_colors[4], alpha=1)  # +Z
+			ax.plot_surface(X + self.position[0], Y + self.position[1], Z + self.position[2] - 0.5, color=self.global_colors[5], alpha=1)  # -Z
+			plt.show()
 		return
 	
 	def reset_colors(self):

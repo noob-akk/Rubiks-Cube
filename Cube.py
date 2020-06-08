@@ -5,9 +5,16 @@ from mpl_toolkits.mplot3d import Axes3D
 
 
 def copyCubies(a, b):
+	# a = b
 	for _a, _b in zip(list(a), list(b)):
 		_a.position = _b.position
 		_a.global_colors = _b.global_colors
+	return
+
+
+def copyCubies2D(a, b):
+	for _a, _b in zip(list(a), list(b)):
+		copyCubies(_a, _b)
 	return
 
 
@@ -35,40 +42,48 @@ class Cube(object):
 		# print(ccwise, cmd)
 		ccint = 2 * int(ccwise) - 1  # type: int
 		
-		self.print_cubies_positions()
+		pre_positions = self.cubies_positions()
 		x = None
 		if cmd[0] == "f":
 			face_array = self.cubies[:, :, 2]
-			self.cubies[:, :, 2] = self.rotate_2d_array(face_array, ccint)
+			# self.cubies[:, :, 2] = self.rotate_2d_array(face_array, ccint)
+			copyCubies2D(self.cubies[:, :, 2], self.rotate_2d_array(face_array, ccint))
 			rotate_face_cubies(self.cubies[:, :, 2], 'Z', ccwise)
 		
 		elif cmd[0] == "b":
 			face_array = self.cubies[:, :, 0]
-			x = self.rotate_2d_array(face_array, ccint)
-			self.cubies[:, :, 0] = self.rotate_2d_array(face_array, ccint)
+			# self.cubies[:, :, 0] = self.rotate_2d_array(face_array, ccint)
+			copyCubies2D(self.cubies[:, :, 0], self.rotate_2d_array(face_array, ccint))
 			rotate_face_cubies(self.cubies[:, :, 0], 'Z', ccwise)
 		
 		elif cmd[0] == "r":
 			face_array = self.cubies[2, :, :]
-			self.cubies[2, :, :] = self.rotate_2d_array(face_array, ccint)
+			# self.cubies[2, :, :] = self.rotate_2d_array(face_array, ccint)
+			copyCubies2D(self.cubies[2, :, :], self.rotate_2d_array(face_array, ccint))
 			rotate_face_cubies(self.cubies[2, :, :], 'X', ccwise)
 		
 		elif cmd[0] == "l":
 			face_array = self.cubies[0, :, :]
-			self.cubies[0, :, :] = self.rotate_2d_array(face_array, ccint)
+			# self.cubies[0, :, :] = self.rotate_2d_array(face_array, ccint)
+			copyCubies2D(self.cubies[0, :, :], self.rotate_2d_array(face_array, ccint))
 			rotate_face_cubies(self.cubies[0, :, :], 'X', ccwise)
 		
 		elif cmd[0] == "u":
 			face_array = self.cubies[:, 2, :]
-			self.cubies[:, 2, :] = self.rotate_2d_array(face_array, ccint)
+			# self.cubies[:, 2, :] = self.rotate_2d_array(face_array, ccint)
+			copyCubies2D(self.cubies[:, 2, :], self.rotate_2d_array(face_array, ccint))
 			rotate_face_cubies(self.cubies[:, 2, :], 'Y', ccwise)
 		
 		else:
 			face_array = self.cubies[:, 0, :]
-			self.cubies[:, 0, :] = self.rotate_2d_array(face_array, ccint)
+			# self.cubies[:, 0, :] = self.rotate_2d_array(face_array, ccint)
+			copyCubies2D(self.cubies[:, 0, :], self.rotate_2d_array(face_array, ccint))
 			rotate_face_cubies(self.cubies[:, 0, :], 'Y', ccwise)
 		
-		self.reset_positions()
+		post_positions = self.cubies_positions()
+		for pre, post in zip(pre_positions, post_positions):
+			if pre!=post:
+				print(pre, post)
 		self.reset_positions()
 		return x
 	
@@ -97,15 +112,35 @@ class Cube(object):
 		return
 	
 	def rotate_2d_array(self, face_array, ccint):
+		print(ccint)
 		cubies = [MiniCube([0, 0, 0]) for _ in range(self.size*self.size)]
 		newcubes = np.array(cubies)
 		newcubes = np.resize(newcubes, (self.size, self.size))
 		
-		copyCubies(newcubes[::-1 * ccint, 2], face_array[0, :])
-		copyCubies(newcubes[2, ::1 * ccint], face_array[:, 2])
-		copyCubies(newcubes[::-1 * ccint, 0], face_array[2, :])
-		copyCubies(newcubes[0, ::1 * ccint], face_array[:, 0])
-		copyCubies(newcubes[1:2, 1], face_array[1:2, 1])
+		# newcubes[::-1 * ccint, 2] = face_array[0, :]
+		# newcubes[2, ::1 * ccint] = face_array[:, 2]
+		# newcubes[::-1 * ccint, 0] = face_array[2, :]
+		# newcubes[0, ::1 * ccint] = face_array[:, 0]
+		# newcubes[1:2, 1] = face_array[1:2, 1]
+		
+		if ccint>0:
+			copyCubies(newcubes[::-1, 0], face_array[0, :])
+			copyCubies(newcubes[::-1, 2], face_array[2, :])
+			copyCubies(newcubes[2, :], face_array[:, 0])
+			copyCubies(newcubes[0, :], face_array[:, 2])
+			copyCubies(newcubes[1:2, 1], face_array[1:2, 1])
+		else:
+			copyCubies(newcubes[:, 2], face_array[0, :])
+			copyCubies(newcubes[:, 0], face_array[2, :])
+			copyCubies(newcubes[0, ::-1], face_array[:, 0])
+			copyCubies(newcubes[2, ::-1], face_array[:, 2])
+			copyCubies(newcubes[1:2, 1], face_array[1:2, 1])
+			
+		# copyCubies(newcubes[::-ccint, 2], face_array[0, :])
+		# copyCubies(newcubes[2, ::ccint], face_array[:, 2])
+		# copyCubies(newcubes[::-ccint, 0], face_array[2, :])
+		# copyCubies(newcubes[0, ::ccint], face_array[:, 0])
+		# copyCubies(newcubes[1:2, 1], face_array[1:2, 1])
 		# print(newcubes)
 		return newcubes
 	
@@ -115,11 +150,13 @@ class Cube(object):
 			cubie.reset_colors()
 		return
 	
-	def print_cubies_positions(self):
+	def cubies_positions(self, display=False):
 		cubies = np.reshape(self.cubies, (-1))
-		for i, cubie in enumerate(cubies):
-			print(i, cubie.position)
-		return
+		positions = [cubie.position for cubie in cubies]
+		if display:
+			for i, cubie in enumerate(cubies):
+				print(i, cubie.position)
+		return positions
 	
 	def reset_positions(self):
 		for i in range(3):

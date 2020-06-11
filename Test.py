@@ -1,4 +1,4 @@
-from MiniCube import MiniCube
+from Cubie import Cubie
 from Cube import Cube
 
 myCube3 = Cube(3)

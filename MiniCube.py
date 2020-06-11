@@ -22,11 +22,12 @@ class MiniCube(object):
 		"""
 		changes colors of all its faces acc to the roattion
 		"""
+		axis = axis.lower()
 		ncolors = [None] * 6
 		for i in range(6):
 			ncolors[i] = self.global_colors[i]
 		
-		if axis == 'X':
+		if axis == 'x':
 			if counterClockWise:
 				ncolors[2] = self.global_colors[5]
 				ncolors[3] = self.global_colors[4]
@@ -37,7 +38,7 @@ class MiniCube(object):
 				ncolors[3] = self.global_colors[5]
 				ncolors[4] = self.global_colors[3]
 				ncolors[5] = self.global_colors[2]
-		elif axis == 'Y':
+		elif axis == 'y':
 			if counterClockWise:
 				ncolors[0] = self.global_colors[4]
 				ncolors[1] = self.global_colors[5]
@@ -94,3 +95,9 @@ class MiniCube(object):
 	def reset_colors(self):
 		self.global_colors = ['g', 'b', 'white', 'yellow', 'orange', 'r']
 		return
+
+
+cubie = MiniCube([0, 0, 0])
+cubie.render()
+cubie.rotate()
+cubie.render()

@@ -36,30 +36,33 @@ class Cube(object):
 		return
 	
 	def rotate_layer(self, position=0, axis='z', counter_clock=True):
+		axis = axis.lower()
 		if axis == 'x':
 			locs = [[position, 0, 2], [position, 1, 2], [position, 2, 2],
 			        [position, 2, 1], [position, 2, 0], [position, 1, 0],
 			        [position, 0, 0], [position, 0, 1]]
-			
-			for cubie in [self.cubies[idx] for idx in list(self.cube[position,:,:].reshape((-1)))]:
+			self.rotate_edge(locs, counter_clock)
+			for cubie in [self.cubies[idx] for idx in list(self.cube[position, :, :].reshape((-1)))]:
 				cubie.rotate(axis, counter_clock)
-			
+		
 		elif axis == 'y':
 			locs = [[0, position, 0], [1, position, 0], [2, position, 0],
 			        [2, position, 1], [2, position, 2], [1, position, 2],
 			        [0, position, 2], [0, position, 1]]
-			
-			for cubie in [self.cubies[idx] for idx in list(self.cube[:,position,:].reshape((-1)))]:
+			self.rotate_edge(locs, counter_clock)
+			for cubie in [self.cubies[idx] for idx in list(self.cube[:, position, :].reshape((-1)))]:
 				cubie.rotate(axis, counter_clock)
 		else:
-			locs = [[0, position, 2], [1, position, 2], [2, position, 2],
-			        [2, position, 1], [2, position, 0], [1, position, 0],
-			        [0, position, 0], [0, position, 1]]
-			
-			for cubie in [self.cubies[idx] for idx in list(self.cube[:,:,position].reshape((-1)))]:
+			locs = [[0, 2, position], [1, 2, position], [2, 2, position],
+			        [2, 1, position], [2, 0, position], [1, 0, position],
+			        [0, 0, position], [0, 1, position]]
+			self.rotate_edge(locs, counter_clock)
+			for cubie in [self.cubies[idx] for idx in list(self.cube[:, :, position].reshape((-1)))]:
 				cubie.rotate(axis, counter_clock)
+		return
+	
+	def rotate_face(self, cmd="f"):
 		
-		self.rotate_edge(locs, counter_clock)
 		return
 	
 	def render(self):
@@ -74,7 +77,7 @@ class Cube(object):
 			for j in range(self.size):
 				for k in range(self.size):
 					# print(len(cubies))
-					idx = self.cube[i,j,k]
+					idx = self.cube[i, j, k]
 					cubie = self.cubies[idx]
 					ax.plot_surface(Z + i + 0.5, X + j, Y + k,
 					                color=cubie.global_colors[0])  # +X
@@ -99,14 +102,18 @@ class Cube(object):
 		data = []
 		for loc in locs:
 			data += [self.cube[loc[0], loc[1], loc[2]]]
-		
+			# print(data)
+		# print("====")
 		ccint = 2 * int(counter_clock) - 1
 		for i, loc in enumerate(locs):
 			self.cube[loc[0], loc[1], loc[2]] = data[(i + 2 * ccint) % 8]
-		
+			# print(self.cube[loc[0], loc[1], loc[2]])
 		return
 
 
 myCube = Cube(3)
-myCube.rotate_layer(0,'x', True)
 myCube.render()
+# myCube.rotate_layer(0, 'x', True)
+# myCube.render()
+# myCube.rotate_layer(0, 'z', True)
+# myCube.render()

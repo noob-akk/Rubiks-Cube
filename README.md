@@ -11,4 +11,4 @@ project is not to build a simulator.
     * Allowed commands are `["f", "b", "u", "d", "l", "r"]` and their clockwise counterparts
     * `command="f"` would mean rotating front face counter-clockwise
     * `command="b'` would mean rotating back face clockwise
-* Rendering is done in matplotlib. Real-time rendering hasn't been done yet
+* Rendering is done in matplotlib. 

@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from Cubie import Cubie
+from .cubie import Cubie
 
 
 class Cube(object):
@@ -24,6 +24,9 @@ class Cube(object):
 					self.cube[i, j, k] = i + j * n + k * (n ** 2)
 		self.cube_fig = plt.figure(figsize=(10, 10))
 		self.cube_ax = self.cube_fig.add_subplot(111, projection='3d')
+		plt.ion()
+		plt.show()
+		
 		
 	def rotate_layer(self, position=0, axis='z', counter_clock=True):
 		axis = axis.lower()
@@ -60,10 +63,11 @@ class Cube(object):
 		                "l": "x00",
 		                "u": "z21",
 		                "d": "z00"}
-		cmd_decoded = cmds_decoder[command[0]]
-		ccwise += int(cmd_decoded[-1])
-		ccwise %= 2
-		self.rotate_layer(axis=cmd_decoded[0], position=int(cmd_decoded[1]), counter_clock=bool(ccwise))
+		if command[0] in cmds_decoder.keys():
+			cmd_decoded = cmds_decoder[command[0]]
+			ccwise += int(cmd_decoded[-1])
+			ccwise %= 2
+			self.rotate_layer(axis=cmd_decoded[0], position=int(cmd_decoded[1]), counter_clock=bool(ccwise))
 		return
 	
 	def render(self):
@@ -93,7 +97,11 @@ class Cube(object):
 		ax.set_xlabel('X')
 		ax.set_ylabel('Y')
 		ax.set_zlabel('Z')
-		plt.show(ax)
+		plt.draw()
+		plt.pause(2)
+		# print("here")
+		# plt.ion()
+		# plt.show(ax)
 		return
 	
 	def rotate_edge(self, locs, counter_clock=True):
@@ -106,9 +114,4 @@ class Cube(object):
 		return
 
 
-myCube = Cube()
-cmds = "f',r',u',l',d',b'"
 
-for command in cmds.split(","):
-	myCube.rotate_face(command)
-myCube.render()

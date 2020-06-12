@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
+
 class Cubie(object):
 	
 	def __init__(self, position):
@@ -74,7 +75,9 @@ class Cubie(object):
 	
 	def render(self, title="Cubie Render", display=False):
 		axes = [2, 1, 4, 0, 3, 5]
-		print(" %s \n%s%s%s\n %s \n %s \n" % (self.global_colors[axes[0]][0], self.global_colors[axes[1]][0], self.global_colors[axes[2]][0], self.global_colors[axes[3]][0], self.global_colors[axes[4]][0],  self.global_colors[axes[5]][0]))
+		print(" %s \n%s%s%s\n %s \n %s \n" % (
+		self.global_colors[axes[0]][0], self.global_colors[axes[1]][0], self.global_colors[axes[2]][0],
+		self.global_colors[axes[3]][0], self.global_colors[axes[4]][0], self.global_colors[axes[5]][0]))
 		if display:
 			fig = plt.figure(figsize=(3, 3))
 			plt.title("Rubiks Cube")
@@ -83,21 +86,21 @@ class Cubie(object):
 			Y = np.array([0, 0, 1, 1]).reshape((2, 2)) - 0.5
 			Z = np.array([0.] * 4).reshape((2, 2))
 			
-			ax.plot_surface(Z + self.position[0] + 0.5, X + self.position[1], Y + self.position[2], color=self.global_colors[0], alpha=1)  # +X
-			ax.plot_surface(Z + self.position[0] - 0.5, X + self.position[1], Y + self.position[2], color=self.global_colors[1], alpha=1)  # -X
-			ax.plot_surface(X + self.position[0], Z + self.position[1] + 0.5, Y + self.position[2], color=self.global_colors[2], alpha=1)  # +Y
-			ax.plot_surface(X + self.position[0], Z + self.position[1] - 0.5, Y + self.position[2], color=self.global_colors[3], alpha=1)  # -Y
-			ax.plot_surface(X + self.position[0], Y + self.position[1], Z + self.position[2] + 0.5, color=self.global_colors[4], alpha=1)  # +Z
-			ax.plot_surface(X + self.position[0], Y + self.position[1], Z + self.position[2] - 0.5, color=self.global_colors[5], alpha=1)  # -Z
+			ax.plot_surface(Z + self.position[0] + 0.5, X + self.position[1], Y + self.position[2],
+			                color=self.global_colors[0], alpha=1)  # +X
+			ax.plot_surface(Z + self.position[0] - 0.5, X + self.position[1], Y + self.position[2],
+			                color=self.global_colors[1], alpha=1)  # -X
+			ax.plot_surface(X + self.position[0], Z + self.position[1] + 0.5, Y + self.position[2],
+			                color=self.global_colors[2], alpha=1)  # +Y
+			ax.plot_surface(X + self.position[0], Z + self.position[1] - 0.5, Y + self.position[2],
+			                color=self.global_colors[3], alpha=1)  # -Y
+			ax.plot_surface(X + self.position[0], Y + self.position[1], Z + self.position[2] + 0.5,
+			                color=self.global_colors[4], alpha=1)  # +Z
+			ax.plot_surface(X + self.position[0], Y + self.position[1], Z + self.position[2] - 0.5,
+			                color=self.global_colors[5], alpha=1)  # -Z
 			plt.show()
 		return
 	
 	def reset_colors(self):
 		self.global_colors = ['g', 'b', 'white', 'yellow', 'orange', 'r']
 		return
-
-#
-# cubie = MiniCube([0, 0, 0])
-# cubie.render()
-# cubie.rotate()
-# cubie.render()

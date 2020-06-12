@@ -26,8 +26,7 @@ class Cube(object):
 		self.cube_ax = self.cube_fig.add_subplot(111, projection='3d')
 		plt.ion()
 		plt.show()
-		
-		
+	
 	def rotate_layer(self, position=0, axis='z', counter_clock=True):
 		axis = axis.lower()
 		if axis == 'x':
@@ -112,6 +111,30 @@ class Cube(object):
 		for i, loc in enumerate(locs):
 			self.cube[loc[0], loc[1], loc[2]] = data[(i + 2 * ccint) % 8]
 		return
-
-
-
+	
+	def return_face_colors(self, axis="x", position=0):
+		color_indexes = {"x2": 0,
+		                 "x0": 1,
+		                 "y2": 2,
+		                 "y0": 3,
+		                 "z2": 4,
+		                 "z0": 5}
+		if axis == "x":
+			cubies = self.cube[position, :, :]
+		elif axis == "y":
+			cubies = self.cube[:, position, :]
+		else:
+			cubies = self.cube[:, :, position]
+		
+		colors = np.array([self.cubies[cubie].global_colors[color_indexes[axis + str(position)]] for cubie in cubies.reshape((-1))]).reshape(
+			(3, 3))
+		return colors
+	
+	def return_cube_state(self):
+		f = self.return_face_colors(axis="y", position=0)
+		b = self.return_face_colors(axis="y", position=2)
+		l = self.return_face_colors(axis="x", position=0)
+		r = self.return_face_colors(axis="x", position=2)
+		u = self.return_face_colors(axis="z", position=2)
+		d = self.return_face_colors(axis="z", position=0)
+		return np.array([f, b, r, l, u, d])

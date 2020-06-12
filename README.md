@@ -10,5 +10,7 @@ For the same reason, the available commands are kept minimal.
 project is not to build a simulator.
     * Allowed commands are `["f", "b", "u", "d", "l", "r"]` and their clockwise counterparts
     * `command="f"` would mean rotating front face counter-clockwise
-    * `command="b'` would mean rotating back face clockwise
+    * `command="b'"` would mean rotating back face clockwise
 * Rendering is done in matplotlib. 
+* Interaction window is limited to 2 seconds after entering the command 
+and after the plot freezes. As long as your mouse is not released the plot doesn't freeze.

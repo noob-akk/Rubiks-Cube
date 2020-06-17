@@ -26,6 +26,9 @@ class Cube(object):
 		self.cube_ax = self.cube_fig.add_subplot(111, projection='3d')
 		plt.ion()
 		plt.show()
+		self.edge_score = 1
+		self.corner_score = 1
+		self.render_pause_time = 2
 	
 	def rotate_layer(self, position=0, axis='z', counter_clock=True):
 		axis = axis.lower()
@@ -97,11 +100,14 @@ class Cube(object):
 		ax.set_ylabel('Y')
 		ax.set_zlabel('Z')
 		plt.draw()
-		plt.pause(2)
+		plt.pause(self.render_pause_time)
 		# print("here")
 		# plt.ion()
 		# plt.show(ax)
 		return
+	
+	def set_render_time(self, time):
+		self.render_pause_time = time
 	
 	def rotate_edge(self, locs, counter_clock=True):
 		data = []
@@ -126,7 +132,8 @@ class Cube(object):
 		else:
 			cubies = self.cube[:, :, position]
 		
-		colors = np.array([self.cubies[cubie].global_colors[color_indexes[axis + str(position)]] for cubie in cubies.reshape((-1))]).reshape(
+		colors = np.array([self.cubies[cubie].global_colors[color_indexes[axis + str(position)]] for cubie in
+		                   cubies.reshape((-1))]).reshape(
 			(3, 3))
 		return colors
 	
@@ -138,3 +145,73 @@ class Cube(object):
 		u = self.return_face_colors(axis="z", position=2)
 		d = self.return_face_colors(axis="z", position=0)
 		return np.array([f, b, r, l, u, d])
+	
+	def set_weights_edge_corner(self, edge, corner):
+		self.edge_score = 2 * edge / (edge + corner)
+		self.corner_score = 2 * corner / (edge + corner)
+		return
+	
+	def get_cube_score(self):
+		score = 0.
+		for val in range(27):
+			i = val % 3
+			j = (val // 3) % 3
+			k = (val // 9)
+			# print([i,j,k], self.get_cubie_score(coords=[i, j, k]))
+			score += self.get_cubie_score(coords=[i, j, k])
+		return score
+	
+	def get_cubie_score(self, coords):
+		
+		if sum(np.array(coords) == 1) == 0:
+			# Corner Cubie
+			return int(self.is_cubie_correct(coords)) * self.corner_score
+		
+		elif sum(np.array(coords) == 1) == 1:
+			# Edge Cubie
+			return int(self.is_cubie_correct(coords)) * self.edge_score
+		
+		elif sum(np.array(coords) == 1) == 2:
+			# Face Cubie
+			return 0.
+		else:
+			# Center Cubie
+			return 0.
+	
+	def get_cubie(self, coords):
+		return self.cubies[self.cube[coords[2], coords[1], coords[2]]]
+	
+	def get_visible_colors(self, coords):
+		invisible = np.array(coords) == 1
+		color_coords = (1 - np.array(coords) // 2) + np.array([0, 2, 4])
+		colors = []
+		for iv, color in zip(invisible, [self.get_cubie(coords).global_colors[i] for i in color_coords]):
+			if iv:
+				colors += [None]
+			else:
+				colors += [color]
+		return colors
+	
+	def is_cubie_correct(self, coords):
+		face_colors = []
+		for i, coord in enumerate(coords):
+			face_coords = [1, 1, 1]
+			if coord == 1:
+				face_colors += [None]
+			else:
+				face_coords[i] = coord
+				face_colors += [color for color in self.get_visible_colors(face_coords) if color is not None]
+		# print("FACES: ", face_colors)
+		# print("CUBIE: ", self.get_visible_colors(coords))
+		
+		return face_colors == self.get_visible_colors(coords)
+	
+	def print_correct_cubies(self):
+		for val in range(27):
+			i = val % 3
+			j = (val // 3) % 3
+			k = (val // 9)
+			if sum(np.array([i, j, k]) == 1) < 2:
+				if self.is_cubie_correct([i, j, k]):
+					print([i, j, k])
+		return

@@ -14,3 +14,5 @@ project is not to build a simulator.
 * Rendering is done in matplotlib. 
 * Interaction window is limited to 2 seconds after entering the command 
 and after the plot freezes. As long as your mouse is not released the plot doesn't freeze.
+* Score is number of edge and corner cubes at teh right position. So max score is 20.
+* Edge and corner cubies' score can be changed by `set_weights_edge_corner(self, edge, corner)`

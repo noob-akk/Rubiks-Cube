@@ -24,11 +24,12 @@ class Cube(object):
 					self.cube[i, j, k] = i + j * n + k * (n ** 2)
 		self.cube_fig = plt.figure(figsize=(10, 10))
 		self.cube_ax = self.cube_fig.add_subplot(111, projection='3d')
-		plt.ion()
-		plt.show()
+		
+		self.render_first = True
 		self.edge_score = 1
 		self.corner_score = 1
 		self.render_pause_time = 2
+		self.score = self.get_cube_score()
 	
 	def rotate_layer(self, position=0, axis='z', counter_clock=True):
 		axis = axis.lower()
@@ -70,9 +71,15 @@ class Cube(object):
 			ccwise += int(cmd_decoded[-1])
 			ccwise %= 2
 			self.rotate_layer(axis=cmd_decoded[0], position=int(cmd_decoded[1]), counter_clock=bool(ccwise))
+		self.score = self.get_cube_score()
+		
 		return
 	
 	def render(self):
+		if self.render_first:
+			plt.ion()
+			plt.show()
+			self.render_first = False
 		ax = self.cube_ax
 		X = np.array([0, 1, 0, 1]).reshape((2, 2)) - 0.5
 		Y = np.array([0, 0, 1, 1]).reshape((2, 2)) - 0.5
@@ -101,9 +108,6 @@ class Cube(object):
 		ax.set_zlabel('Z')
 		plt.draw()
 		plt.pause(self.render_pause_time)
-		# print("here")
-		# plt.ion()
-		# plt.show(ax)
 		return
 	
 	def set_render_time(self, time):
@@ -118,7 +122,7 @@ class Cube(object):
 			self.cube[loc[0], loc[1], loc[2]] = data[(i + 2 * ccint) % 8]
 		return
 	
-	def return_face_colors(self, axis="x", position=0):
+	def get_face_colors(self, axis="x", position=0):
 		color_indexes = {"x2": 0,
 		                 "x0": 1,
 		                 "y2": 2,
@@ -132,18 +136,22 @@ class Cube(object):
 		else:
 			cubies = self.cube[:, :, position]
 		
-		colors = np.array([self.cubies[cubie].global_colors[color_indexes[axis + str(position)]] for cubie in
-		                   cubies.reshape((-1))]).reshape(
-			(3, 3))
+		color_code = {'g': 0, 'b': 1,
+		              'white': 2, 'yellow': 3,
+		              'orange': 4, 'r': 5}
+		_colors = [self.cubies[cubie].global_colors[color_indexes[axis + str(position)]] for cubie in
+		           cubies.reshape((-1))]
+		_colors = [color_code[cccode] for cccode in _colors]
+		colors = np.array(_colors).reshape((3, 3))
 		return colors
 	
-	def return_cube_state(self):
-		f = self.return_face_colors(axis="y", position=0)
-		b = self.return_face_colors(axis="y", position=2)
-		l = self.return_face_colors(axis="x", position=0)
-		r = self.return_face_colors(axis="x", position=2)
-		u = self.return_face_colors(axis="z", position=2)
-		d = self.return_face_colors(axis="z", position=0)
+	def get_state(self):
+		f = self.get_face_colors(axis="y", position=0)
+		b = self.get_face_colors(axis="y", position=2)
+		l = self.get_face_colors(axis="x", position=0)
+		r = self.get_face_colors(axis="x", position=2)
+		u = self.get_face_colors(axis="z", position=2)
+		d = self.get_face_colors(axis="z", position=0)
 		return np.array([f, b, r, l, u, d])
 	
 	def set_weights_edge_corner(self, edge, corner):
@@ -159,6 +167,8 @@ class Cube(object):
 			k = (val // 9)
 			# print([i,j,k], self.get_cubie_score(coords=[i, j, k]))
 			score += self.get_cubie_score(coords=[i, j, k])
+		if score == 20.:
+			score = 5000.
 		return score
 	
 	def get_cubie_score(self, coords):
@@ -215,3 +225,30 @@ class Cube(object):
 				if self.is_cubie_correct([i, j, k]):
 					print([i, j, k])
 		return
+	
+	def reset(self):
+		n = 3
+		self.size = n
+		self.cubies = [Cubie([0, 0, 0]) for _ in range(n ** 3)]
+		self.cube = np.zeros((n, n, n), dtype=int)
+		for i in range(n):
+			for j in range(n):
+				for k in range(n):
+					self.cube[i, j, k] = i + j * n + k * (n ** 2)
+		self.score = self.get_cube_score()
+		return
+	
+	def scramble(self):
+		self.reset()
+		cmds_length = np.random.randint(50, 100, 1)[0]
+		base_cmds = ["l", "r", "u", "d", "f", "b"]
+		cmds = []
+		cmd_idxs = np.random.uniform(0, 6, cmds_length).astype(np.int)
+		cc_idxs = np.random.uniform(0, 2, cmds_length).astype(np.int)
+		for cmd_idx, cc_idx in zip(cmd_idxs, cc_idxs):
+			cmd = base_cmds[cmd_idx]
+			if cc_idx == 1:
+				cmd += "'"
+			self.rotate_face(command=cmd)
+			cmds += [cmd]
+		return cmds

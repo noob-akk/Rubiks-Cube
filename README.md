@@ -16,3 +16,9 @@ project is not to build a simulator.
 and after the plot freezes. As long as your mouse is not released the plot doesn't freeze.
 * Score is number of edge and corner cubes at teh right position. So max score is 20.
 * Edge and corner cubies' score can be changed by `set_weights_edge_corner(self, edge, corner)`
+
+### RL
+* Simple Env is created
+* Q-Learning with ANN as parametrized Q-function
+* QNN takes state as input and gives `Q(s,a)` for all actions
+* Epsilon-Greedy is implemented

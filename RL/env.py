@@ -1,8 +1,8 @@
-from Rubix.cube import Cube
+from Rubix import Cube
 
 
 class Env(object):
-	def __init__(self, penalty=0.1):
+	def __init__(self, penalty=0.):
 		self.cube = Cube()
 		self.actions_so_far = []
 		self.rewards_so_far = []
@@ -25,6 +25,8 @@ class Env(object):
 		score = self.cube.score
 		self.cube.rotate_face(self.action_space[action])
 		self.actions_so_far += [self.action_space[action]]
+		# self.cube.render()
 		reward = self.cube.score - score - self.penalty
 		self.rewards_so_far += [reward]
-		return state, action, reward, self.cube.get_state()
+		return state, action, reward, \
+		       self.cube.get_state(), self.cube.is_solved()

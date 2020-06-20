@@ -28,8 +28,10 @@ class Cube(object):
 		self.render_first = True
 		self.edge_score = 1
 		self.corner_score = 1
-		self.render_pause_time = 2
+		self.render_pause_time = 0.01
+		self.max_score = 5000.
 		self.score = self.get_cube_score()
+		
 	
 	def rotate_layer(self, position=0, axis='z', counter_clock=True):
 		axis = axis.lower()
@@ -72,7 +74,7 @@ class Cube(object):
 			ccwise %= 2
 			self.rotate_layer(axis=cmd_decoded[0], position=int(cmd_decoded[1]), counter_clock=bool(ccwise))
 		self.score = self.get_cube_score()
-		
+		# print("CUBE ROTATED: ", command, self.score)
 		return
 	
 	def render(self):
@@ -141,8 +143,8 @@ class Cube(object):
 		              'orange': 4, 'r': 5}
 		_colors = [self.cubies[cubie].global_colors[color_indexes[axis + str(position)]] for cubie in
 		           cubies.reshape((-1))]
-		_colors = [color_code[cccode] for cccode in _colors]
-		colors = np.array(_colors).reshape((3, 3))
+		colors = [color_code[cccode] for cccode in _colors]
+		
 		return colors
 	
 	def get_state(self):
@@ -152,7 +154,7 @@ class Cube(object):
 		r = self.get_face_colors(axis="x", position=2)
 		u = self.get_face_colors(axis="z", position=2)
 		d = self.get_face_colors(axis="z", position=0)
-		return np.array([f, b, r, l, u, d])
+		return np.array(f + b + r + l + u + d)
 	
 	def set_weights_edge_corner(self, edge, corner):
 		self.edge_score = 2 * edge / (edge + corner)
@@ -168,7 +170,7 @@ class Cube(object):
 			# print([i,j,k], self.get_cubie_score(coords=[i, j, k]))
 			score += self.get_cubie_score(coords=[i, j, k])
 		if score == 20.:
-			score = 5000.
+			score = self.max_score
 		return score
 	
 	def get_cubie_score(self, coords):
@@ -252,3 +254,6 @@ class Cube(object):
 			self.rotate_face(command=cmd)
 			cmds += [cmd]
 		return cmds
+	
+	def is_solved(self):
+		return self.score == self.max_score

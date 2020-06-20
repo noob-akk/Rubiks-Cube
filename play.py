@@ -1,4 +1,4 @@
-from Rubix.cube import Cube
+from Rubix import Cube
 import time
 myCube = Cube()
 myCube.set_render_time(2)

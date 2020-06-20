@@ -11,10 +11,5 @@ while cmd:
 		
 	print("SCORE: ", myCube.get_cube_score())
 	cmd = input("Enter the command: ")
-	
-myCube.reset()
-print("SCORE: ", myCube.get_cube_score())
-myCube.render()
-
 
 print("Exited the simulation")
